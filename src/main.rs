@@ -1,22 +1,17 @@
-use NeuralNet::matrix::Matrix;
+use NeuralNet::{matrix::Matrix, matrixop::dot};
 
 fn main() {
     let mut mat = Matrix::new(4, 4);
-
-    mat.print();
     mat.randomize();
 
     mat.print();
 
-    mat.fill(1.0);
-    mat.print();
+    let mut mat2 = Matrix::new(4, 4);
+    mat2.randomize();
 
-    let mat2 = mat.flatten(0);
+    mat2.print();
 
-    match mat2 {
-        Ok(mat2) => {
-            mat2.print();
-        }
-        Err(()) => {}
-    }
+    let mat3 = dot(&mat, &mat2).unwrap();
+
+    mat3.print()
 }
