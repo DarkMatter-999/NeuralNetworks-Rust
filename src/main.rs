@@ -13,7 +13,7 @@ macro_rules!vec2d {
 }
 
 fn main() {
-    let mut network: Vec<Box<dyn Learn>> = vec![
+    let network: Vec<Box<dyn Learn>> = vec![
         Box::new(DenseLayer::new(2, 3)),
         Box::new(Sigmoid::new(3, 3)),
         Box::new(DenseLayer::new(3, 1)),
@@ -26,10 +26,10 @@ fn main() {
     let epochs = 10000;
     let learning_rate = 1.0;
 
-    let mut trainedNetwork = train(network, epochs, &xtrain, &ytrain, learning_rate);
+    let mut trained_network = train(network, epochs, &xtrain, &ytrain, learning_rate);
 
     for (x, y) in xtrain.into_iter().zip(ytrain.into_iter()) {
-        let output = predict(&mut trainedNetwork, &x);
+        let output = predict(&mut trained_network, &x);
 
         println!(
             "Input {:?}  \nPredicted Output {:?} Actual Output {:?}",
