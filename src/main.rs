@@ -1,4 +1,4 @@
-use NeuralNet::{dense::DenseLayer, layer::Learn, sigmoid::Sigmoid, train};
+use NeuralNet::{dense::DenseLayer, layer::Learn, predict, sigmoid::Sigmoid, train};
 
 // Macro to make 2d vector from array
 // vec![vec![T], vec![T]...]
@@ -26,5 +26,14 @@ fn main() {
     let epochs = 10000;
     let learning_rate = 1.0;
 
-    let trainedNetword = train(network, epochs, &xtrain, &ytrain, learning_rate);
+    let mut trainedNetwork = train(network, epochs, &xtrain, &ytrain, learning_rate);
+
+    for (x, y) in xtrain.into_iter().zip(ytrain.into_iter()) {
+        let output = predict(&mut trainedNetwork, &x);
+
+        println!(
+            "Input {:?}  \nPredicted Output {:?} Actual Output {:?}",
+            x, output.data, y
+        );
+    }
 }

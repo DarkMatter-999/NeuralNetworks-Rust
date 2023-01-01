@@ -24,13 +24,15 @@ pub fn train(
     for e in 0..epochs {
         for (x, y) in xtrain.into_iter().zip(ytrain.into_iter()) {
             // forward
-            let mut output = Matrix::new(2, 1);
+            let mut output = Matrix::new(x.len(), 1);
             for i in 0..output.rows {
                 output.data[i][0] = x[i];
             }
 
-            let mut y_ = Matrix::new(1, 1);
-            y_.data[0][0] = y[0];
+            let mut y_ = Matrix::new(y.len(), 1);
+            for i in 0..y_.rows {
+                y_.data[i][0] = y[i];
+            }
 
             for layer in &mut network {
                 output = layer.forward(output);
@@ -58,4 +60,18 @@ pub fn train(
     }
 
     network
+}
+
+pub fn predict(network: &mut Vec<Box<dyn Learn>>, xtest: &Vec<f64>) -> Matrix {
+    // forward
+    let mut output = Matrix::new(xtest.len(), 1);
+    for i in 0..output.rows {
+        output.data[i][0] = xtest[i];
+    }
+
+    for i in 0..network.len() {
+        output = network[i].forward(output);
+    }
+
+    output
 }
