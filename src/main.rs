@@ -1,4 +1,10 @@
-use NeuralNet::{dense::DenseLayer, layer::Learn, matrix::Matrix, matrixop::dot, sigmoid::Sigmoid};
+use NeuralNet::{
+    dense::DenseLayer,
+    layer::Learn,
+    matrix::Matrix,
+    mse::{mse, mse_prime},
+    sigmoid::Sigmoid,
+};
 
 fn main() {
     let mut network: Vec<Box<dyn Learn>> = vec![
@@ -10,6 +16,8 @@ fn main() {
 
     let x = [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
     let y = [[0.0], [1.0], [1.0], [0.0]];
+
+    let mut error = 0.0;
 
     for (x, y) in x.into_iter().zip(y.into_iter()) {
         // forward
@@ -25,6 +33,20 @@ fn main() {
             output = layer.forward(output);
         }
 
-        println!("{:?} => {:?} / {:?}", x, y, &output.data);
+        // println!("{:?} => {:?} / {:?}", x, y, &output.data);
+
+        // error
+        error += mse(&y_, &output);
+
+        //backward
+        let mut grad = mse_prime(&y_, &output);
+
+        // println!("1st grad: {:?}", grad.data);
+
+        network.reverse();
+        for layer in &mut network {
+            grad = layer.backward(grad, 0.1);
+        }
+        network.reverse();
     }
 }
