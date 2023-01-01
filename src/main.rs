@@ -41,7 +41,7 @@ fn main() {
         //backward
         let mut grad = mse_prime(&y_, &output);
 
-        // println!("1st grad: {:?}", grad.data);
+        println!("grad: {:?}", grad.data);
 
         network.reverse();
         for layer in &mut network {
