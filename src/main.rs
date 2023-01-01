@@ -1,17 +1,30 @@
-use NeuralNet::{matrix::Matrix, matrixop::dot};
+use NeuralNet::{dense::DenseLayer, layer::Learn, matrix::Matrix, matrixop::dot, sigmoid::Sigmoid};
 
 fn main() {
-    let mut mat = Matrix::new(4, 4);
-    mat.randomize();
+    let mut network: Vec<Box<dyn Learn>> = vec![
+        Box::new(DenseLayer::new(2, 3)),
+        Box::new(Sigmoid::new(3, 3)),
+        Box::new(DenseLayer::new(3, 1)),
+        Box::new(Sigmoid::new(1, 1)),
+    ];
 
-    mat.print();
+    let x = [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
+    let y = [[0.0], [1.0], [1.0], [0.0]];
 
-    let mut mat2 = Matrix::new(4, 4);
-    mat2.randomize();
+    for (x, y) in x.into_iter().zip(y.into_iter()) {
+        // forward
+        let mut output = Matrix::new(2, 1);
+        for i in 0..output.rows {
+            output.data[i][0] = x[i];
+        }
 
-    mat2.print();
+        let mut y_ = Matrix::new(1, 1);
+        y_.data[0][0] = y[0];
 
-    let mat3 = dot(&mat, &mat2).unwrap();
+        for layer in &mut network {
+            output = layer.forward(output);
+        }
 
-    mat3.print()
+        println!("{:?} => {:?} / {:?}", x, y, &output.data);
+    }
 }
