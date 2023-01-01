@@ -5,6 +5,7 @@ pub mod matrix;
 pub mod matrixop;
 pub mod mse;
 pub mod sigmoid;
+pub mod tanh;
 
 use crate::{
     layer::Learn,
