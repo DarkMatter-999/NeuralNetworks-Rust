@@ -1,10 +1,16 @@
-use NeuralNet::{
-    dense::DenseLayer,
-    layer::Learn,
-    matrix::Matrix,
-    mse::{mse, mse_prime},
-    sigmoid::Sigmoid,
-};
+use NeuralNet::{dense::DenseLayer, layer::Learn, sigmoid::Sigmoid, train};
+
+// Macro to make 2d vector from array
+// vec![vec![T], vec![T]...]
+macro_rules!vec2d {
+    [ $( [ $( $d:expr ),* ] ),* ] => {
+        vec![
+            $(
+                vec![$($d),*],
+            )*
+        ]
+    }
+}
 
 fn main() {
     let mut network: Vec<Box<dyn Learn>> = vec![
@@ -14,47 +20,11 @@ fn main() {
         Box::new(Sigmoid::new(1, 1)),
     ];
 
-    let xtrain = [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
-    let ytrain = [[0.0], [1.0], [1.0], [0.0]];
+    let xtrain = vec2d![[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
+    let ytrain = vec2d![[0.0], [1.0], [1.0], [0.0]];
 
     let epochs = 10000;
     let learning_rate = 1.0;
 
-    let mut error = 0.0;
-
-    for e in 0..epochs {
-        for (x, y) in xtrain.into_iter().zip(ytrain.into_iter()) {
-            // forward
-            let mut output = Matrix::new(2, 1);
-            for i in 0..output.rows {
-                output.data[i][0] = x[i];
-            }
-
-            let mut y_ = Matrix::new(1, 1);
-            y_.data[0][0] = y[0];
-
-            for layer in &mut network {
-                output = layer.forward(output);
-            }
-
-            // println!("{:?} => {:?} / {:?}", x, y, &output.data);
-
-            // error
-            error += mse(&y_, &output);
-
-            //backward
-            let mut grad = mse_prime(&y_, &output);
-
-            // println!("grad: {:?}", grad.data);
-
-            network.reverse();
-            for layer in &mut network {
-                grad = layer.backward(grad, learning_rate);
-            }
-            network.reverse();
-        }
-
-        error /= xtrain.len() as f64;
-        println!("{:}/{:} error={:}", e + 1, epochs, error);
-    }
+    let trainedNetword = train(network, epochs, &xtrain, &ytrain, learning_rate);
 }
